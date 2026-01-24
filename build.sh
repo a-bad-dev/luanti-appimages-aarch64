@@ -83,9 +83,6 @@ for i in "${INCLUDE_LIBS[@]}"; do
 	cp /usr/lib/aarch64-linux-gnu/$i usr/lib/
 done
 
-# Copy over SDL2
-cp /usr/lib/aarch64-linux-gnu/libSDL2-2.0.so.0 usr/lib/
-
 # Actually build the appimage
 cd ..
 ARCH=aarch64 ./appimagetool --appimage-extract-and-run AppDir/
