@@ -99,7 +99,7 @@ cd ..
 ARCH=aarch64 ./appimagetool --appimage-extract-and-run AppDir/
 
 # Move the appimage to this script's folder
-mv Luanti-aarch64.AppImage ../../luanti-5.15.0-aarch64.AppImage
+mv Luanti-aarch64.AppImage ../../luanti-${VERSION}-aarch64.AppImage
 
 # Clean up
 cd ../..
