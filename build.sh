@@ -11,28 +11,53 @@ GREEN="\033[32m"
 RESET="\033[0m"
 
 echo -e "${BOLD}Downloading deps...${RESET}"
-apt-get install -y git g++ make ninja-build libc6-dev cmake libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-openssl-dev libfreetype6-dev zlib1g-dev libgmp-dev libsdl2-dev libzstd-dev libleveldb-dev gettext desktop-file-utils ca-certificates wget file --no-install-recommends
+apt-get install -y --no-install-recommends \
+	git \
+	g++ \
+	make \
+	ninja-build \
+	libc6-dev \
+	cmake \
+	curl \
+	libpng-dev \
+	libjpeg-dev \
+	libxi-dev \
+	libgl1-mesa-dev \
+	libsqlite3-dev \
+	libogg-dev \
+	libvorbis-dev \
+	libopenal-dev \
+	libcurl4-openssl-dev \
+	libfreetype6-dev \
+	zlib1g-dev \
+	libgmp-dev \
+	libsdl2-dev \
+	libzstd-dev \
+	libleveldb-dev \
+	gettext \
+	desktop-file-utils \
+	ca-certificates \
+	file
 
 echo -e "${BOLD}Downloading LuaJIT and Luanti source code...${RESET}"
 git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
-wget -O luanti.zip https://github.com/luanti-org/luanti/archive/refs/tags/${VERSION}.zip
+curl -Lo luanti.zip https://github.com/luanti-org/luanti/archive/refs/tags/${VERSION}.zip
 unzip luanti.zip
 mv luanti-${VERSION} luanti/
 
 echo -e "${BOLD}Compiling LuaJIT...${RESET}"
-pushd luajit
+cd luajit
 make amalg -j$(nproc)
-popd
+cd ..
 
-pushd luanti
-mkdir -p build; cd build
+cd luanti
+mkdir -p build
+cd build
 
 # Download appimagetool
 if [ ! -f appimagetool ]; then
-	# Old version of appimagetool:
-	#wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage -O appimagetool
 	echo -e "${BOLD}Downloading AppImageTool${RESET}"
-	wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-aarch64.AppImage -O appimagetool
+	curl -Lo appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-aarch64.AppImage
 	chmod +x appimagetool
 fi
 
@@ -45,10 +70,6 @@ cmake .. -G Ninja \
 	-DENABLE_SYSTEM_JSONCPP=OFF \
 	-DLUA_INCLUDE_DIR=../../luajit/src/ \
 	-DLUA_LIBRARY=../../luajit/src/libluajit.a
-ninja -j$(nproc)
-
-objcopy --only-keep-debug ../bin/luanti luanti.debug
-objcopy --strip-debug --add-gnu-debuglink=luanti.debug ../bin/luanti
 
 ninja install -j$(nproc)
 
@@ -63,7 +84,7 @@ ln -sf luanti.png .DirIcon
 # Fix locales
 mv usr/share/locale usr/share/luanti
 
-cat > AppRun <<\APPRUN
+cat > AppRun <<'APPRUN'
 #!/bin/sh
 APP_PATH="$(dirname "$(readlink -f "${0}")")"
 export LD_LIBRARY_PATH="${APP_PATH}"/usr/lib/:"${LD_LIBRARY_PATH}"
