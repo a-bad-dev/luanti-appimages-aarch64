@@ -3,7 +3,7 @@
 # run this script on an aarch64 computer, running modern debian or
 #    something similar, otherwise it's not going to work...
 
-VERSION="5.15.0"
+VERSION="5.15.1"
 
 BOLD="\033[1m"
 RED="\033[31m"

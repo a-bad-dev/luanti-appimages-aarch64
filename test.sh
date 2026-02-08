@@ -3,7 +3,7 @@
 # test the AppImage built with build.sh
 # again, this only works on aarch64
 
-VERSION="5.15.0"
+VERSION="5.15.1"
 
 BOLD="\033[1m"
 RED="\033[31m"
