@@ -5,10 +5,10 @@
 
 VERSION="5.15.1"
 
-BOLD="\033[1m"
-RED="\033[31m"
-GREEN="\033[32m"
-RESET="\033[0m"
+BOLD="\x1b[1m"
+RED="\x1b[31m"
+GREEN="\x1b[32m"
+RESET="\x1b[0m"
 
 # make sure we are root
 if [ "$(id -u)" != 0 ]; then
@@ -21,6 +21,7 @@ if [ "$(ps aux | grep luanti | wc -l)" != 1 ]; then
 	echo -e "${BOLD}${RED}No Luanti processes may be running while this script is run.${RESET}"
 	exit 1
 fi
+
 # check if the AppImage even exists
 echo -e "${BOLD}Checking if AppImage exists...${RESET}"
 
@@ -63,7 +64,7 @@ DEPS=(
 echo -e "${BOLD}Removing dependencies...${RESET}"
 
 for d in "${DEPS[@]}"; do
-	apt remove $d -y
+	apt remove ${d} -y
 done
 
 # test the AppImage
@@ -87,7 +88,7 @@ echo -e "${BOLD}Reinstalling dependencies...${RESET}"
 
 # reinstall the dependencies
 for d in "${DEPS[@]}"; do
-	apt-get install -y $d
+	apt-get install -y ${d}
 done
 
 exit 0
