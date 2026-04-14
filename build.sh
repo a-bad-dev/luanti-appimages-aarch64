@@ -5,10 +5,10 @@
 
 VERSION="5.15.1"
 
-BOLD="\033[1m"
-RED="\033[31m"
-GREEN="\033[32m"
-RESET="\033[0m"
+BOLD="\x1b[1m"
+RED="\x1b[31m"
+GREEN="\x1b[32m"
+RESET="\x1b[0m"
 
 # make sure we are root
 if [ "$(id -u)" != 0 ]; then
@@ -48,7 +48,7 @@ apt-get install -y --no-install-recommends \
 
 # download source code
 echo -e "${BOLD}Downloading LuaJIT and Luanti source code...${RESET}"
-git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
+git clone --depth=1 https://github.com/LuaJIT/LuaJIT.git luajit
 curl -Lo luanti.zip https://github.com/luanti-org/luanti/archive/refs/tags/${VERSION}.zip
 unzip luanti.zip
 mv luanti-${VERSION} luanti/
@@ -92,35 +92,36 @@ ln -sf luanti.png .DirIcon
 # fix locales
 mv usr/share/locale usr/share/luanti
 
-cat > AppRun <<'APPRUN'
+cat > AppRun <<'EOF'
 #!/bin/sh
 APP_PATH="$(dirname "$(readlink -f "${0}")")"
 export LD_LIBRARY_PATH="${APP_PATH}"/usr/lib/:"${LD_LIBRARY_PATH}"
 exec "${APP_PATH}/usr/bin/luanti" "$@"
-APPRUN
+EOF
+
 chmod +x AppRun
 
 # bundle the libraries
 INCLUDE_LIBS=(
 	libopenal.so.1
 	libSDL2-2.0.so.0
-	 libsndio.so.7.0
-	  libbsd.so.0
-	   libmd.so.0
+	libsndio.so.7.0
+	libbsd.so.0
+	libmd.so.0
 	libjpeg.so.62
 	libpng16.so.16
 	libvorbisfile.so.3
-	 libogg.so.0
-	 libvorbis.so.0
+	libogg.so.0
+	libvorbis.so.0
 	libzstd.so.1
 	libsqlite3.so.0
 	libleveldb.so.1d
-	 libsnappy.so.1
+	libsnappy.so.1
 )
 
 mkdir -p usr/lib/
 for i in "${INCLUDE_LIBS[@]}"; do
-	cp /usr/lib/aarch64-linux-gnu/$i usr/lib/
+	cp /usr/lib/aarch64-linux-gnu/${i} usr/lib/
 done
 
 # finally make the appimage
