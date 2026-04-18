@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # run this script on an aarch64 computer, running modern debian or
-#    something similar, otherwise it's not going to work...
+# something similar, otherwise it's not going to work...
 
 VERSION="5.15.2"
 
@@ -11,7 +11,7 @@ GREEN="\x1b[32m"
 RESET="\x1b[0m"
 
 # make sure we are root
-if [ "$(id -u)" != 0 ]; then
+if [ "$(id -u)" != "0" ]; then
 	echo -e "${BOLD}${RED}This script must be run as root!${RESET}"
 	exit 1
 fi
@@ -46,7 +46,7 @@ apt-get install -y --no-install-recommends \
 	ca-certificates \
 	file
 
-# download source code
+# download luajit and luanti source code
 echo -e "${BOLD}Downloading LuaJIT and Luanti source code...${RESET}"
 git clone --depth=1 https://github.com/LuaJIT/LuaJIT.git luajit
 curl -Lo luanti.zip https://github.com/luanti-org/luanti/archive/refs/tags/${VERSION}.zip
@@ -68,7 +68,7 @@ echo -e "${BOLD}Downloading AppImageTool${RESET}"
 curl -Lo appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-aarch64.AppImage
 chmod +x appimagetool
 
-# compile and install into AppDir
+# compile luanti
 echo -e "${BOLD}Compiling Luanti...${RESET}"
 cmake .. -G Ninja \
 	-DCMAKE_BUILD_TYPE=Release \
@@ -78,13 +78,14 @@ cmake .. -G Ninja \
 	-DLUA_INCLUDE_DIR=../../luajit/src/ \
 	-DLUA_LIBRARY=../../luajit/src/libluajit.a
 
+# install into the AppDir folder
 ninja install -j$(nproc)
 
 # build the appimage itself
 cd AppDir
 
 echo -e "${BOLD}Building AppImage...${RESET}"
-# put desktop and icon at root
+# put desktop and icon at root of AppDir
 ln -sf usr/share/applications/org.luanti.luanti.desktop luanti.desktop
 ln -sf usr/share/icons/hicolor/128x128/apps/luanti.png luanti.png
 ln -sf luanti.png .DirIcon
@@ -93,7 +94,7 @@ ln -sf luanti.png .DirIcon
 mv usr/share/locale usr/share/luanti
 
 cat > AppRun <<'EOF'
-#!/bin/sh
+#!/bin/bash
 APP_PATH="$(dirname "$(readlink -f "${0}")")"
 export LD_LIBRARY_PATH="${APP_PATH}"/usr/lib/:"${LD_LIBRARY_PATH}"
 exec "${APP_PATH}/usr/bin/luanti" "$@"
