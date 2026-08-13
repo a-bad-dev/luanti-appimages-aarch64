@@ -3,7 +3,7 @@
 # run this script on an aarch64 computer, running modern debian or
 # something similar, otherwise it's not going to work...
 
-VERSION="5.17.0-rc1"
+VERSION="$(cat VERSION)"
 SDL_VERSION="2.32.10"
 
 BOLD="\x1b[1m"
